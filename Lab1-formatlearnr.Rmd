@@ -1,0 +1,292 @@
+---
+title: "Lab1-Format-Learnr"
+author: "MaribelOrtego"
+date: "`r format(Sys.time(), '%Y %B %d')`"
+output: learnr::tutorial
+runtime: shiny_prerendered
+---
+
+```{r, label="generaloptions", include=FALSE}
+library(learnr) 
+ knitr::opts_chunk$set(
+  echo = FALSE, 
+  #fig.path= "figures/" ,
+  fig.width = 6 ,
+  out.width = "50%",
+  fig.align = "center" ,
+  fig.caption= TRUE
+  )
+
+tutorial(
+  fig_width = 6.5,
+  fig_height = 4,
+  fig_retina = 2,
+  fig_caption = TRUE,
+  progressive = FALSE,
+  allow_skip = FALSE,
+  dev = "png",
+  df_print = "paged",
+  smart = TRUE,
+  #theme = "rstudio",
+  theme = "journal",
+  highlight = "textmate",
+  ace_theme = "textmate",
+  mathjax = "default"
+  )
+```
+
+# Lab1. Probabilitat i Estadística. GEC20. Curs 2024/2025.
+
+## Cal ser ordenats. Directori de treball.
+
+## Basics molt basics de R
+
+Aqui expliquem suma de dos valors, 
+
+```{r two-plus-twoex, echo=TRUE}
+2+2
+```
+
+donar nom a un valor, definir un vector, 
+
+```{r def-vec-ex, echo=TRUE}
+nomval<- 2+2
+nomvec<-c(2,4,5)
+nomval
+nomvec
+```
+
+una sequencia, seq , ajuda
+```{r def-vec-seq, exercise=TRUE}
+?seq
+nomvec2<-seq(from=1, to=10, length.out=20)
+```
+
+Cridar unes dades de dintre d'un paquet
+
+```{r cridamtcars, echo=TRUE}
+data(mtcars)
+```
+
+Format matricial de la crida
+
+Noms. Crida pel nom. Crida del head
+
+Exercici crida iris. Format matricial. Crida nom
+
+### Exercici 1 
+
+*Here's a simple exercise with an empty code chunk provided for entering the answer.*
+
+Write the R code required to add two plus two:
+
+```{r two-plus-two, exercise=TRUE}
+
+```
+
+### Exercise with Code
+
+*Here's an exercise with some prepopulated code as well as `exercise.lines = 5` to provide a bit more initial room to work.*
+
+Now write a function that adds any two numbers and then call it:
+
+```{r add-function, exercise=TRUE, exercise.lines = 5}
+add <- function() {
+  
+}
+```
+
+## Llegir dades
+
+Insistir directori de treball. Estructura
+fitxer extern csv.  Lectura de fitxer extern
+csv.
+
+```{r lecturadades, echo=TRUE}
+dades<-read.table("dades-2425-tots-mod-red.csv", sep=";", header=TRUE)
+
+```
+Crida de noms
+Crida de la primera variable
+
+```{r cridavar, echo=TRUE}
+names(dades)
+dades$Alt
+```
+
+## Estadística descriptiva: resums numèrics
+
+```{r descripnum, echo=TRUE}
+summary(dades)
+summary(dades$Alt)
+mean(dades$Alt) #mitjana sensible valors extrems. Què passa si tenim algú de 2m?
+median(dades$Alt)
+var(dades$Alt) #variança mostral dividint per n o per n-1?
+sd(dades$Alt) 
+
+quantile(dades$Alt, na.rm=TRUE) #quartils
+quantile(dades$Alt, probs = seq(0, 1, 1/10),na.rm=TRUE)    # Deciles
+quantile(dades$Alt, probs = c(0.05,0.95),na.rm=TRUE) # Percentil 5 i 95
+
+```
+
+## Descriptiva: primeres representacions
+
+histograma una variable quant continua
+Boxplot una variable
+
+```{r hist, echo=TRUE}
+hist(dades$Alt)
+```
+
+```{r boxplot, echo=TRUE}
+boxplot(dades$Alt)
+```
+
+Exercici fer histogrma una variable i boxplot una altra
+
+Variable quantitativa (factor):
+
+```{r quant, echo=TRUE}
+summary(dades$Ulls) #identifica la variable com un caràcter. És un factor
+summary(as.factor(dades$Ulls)) #solució només per aquesta representació
+#per usos posteriors, guardarem la variable com a factor
+dades$Ulls<-as.factor(dades$Ulls)
+summary(dades$Ulls)
+
+plot(dades$Ulls) #observem que els NA no són un nivell del factor
+
+```
+
+## factor per enriquir interpretació de variable quantitativa
+
+mateixa situació que amb Ulls, cal identificar com a factor
+```{r combinaciofactor, echo=TRUE}
+plot(dades$Alt~as.factor(dades$Grup)) 
+```
+en aquesta combinació particular, plot ens fa un boxplot
+
+Fer boxplot:
+```{r boxplotcombinaciofactor, echo=TRUE}
+boxplot(dades$Alt~dades$Germans)
+```
+
+Exercici: boxplot alçada amb ulls:
+
+plot(dades$Alt~dades$Ulls)
+
+### Exercise with Hint
+
+*Here's an exercise where the chunk is pre-evaluated via the `exercise.eval` option (so the user can see the default output we'd like them to customize). We also add a "hint" to the correct solution via the chunk immediate below labeled `print-limit-hint`.*
+
+Modify the following code to limit the number of rows printed to 5:
+
+```{r print-limit, exercise=TRUE, exercise.eval=TRUE}
+mtcars
+```
+
+```{r print-limit-hint}
+head(mtcars)
+```
+
+### Quiz
+
+*You can include any number of single or multiple choice questions as a quiz. Use the `question` function to define a question and the `quiz` function for grouping multiple questions together.*
+
+Some questions to verify that you understand the purposes of various base and recommended R packages:
+
+```{r quiz}
+quiz(
+  question("Which package contains functions for installing other R packages?",
+    answer("base"),
+    answer("tools"),
+    answer("utils", correct = TRUE),
+    answer("codetools")
+  ),
+  question("Which of the R packages listed below are used to create plots?",
+    answer("lattice", correct = TRUE),
+    answer("tools"),
+    answer("stats"),
+    answer("grid", correct = TRUE)
+  )
+)
+```
+
+## Extra: Plots amb ggplot
+
+```{r llibreriesextra, echo=TRUE}
+# Libraries
+#install.packages("extrafont")
+library(extrafont)
+#extrafont::font_import()
+#extrafont::loadfonts()
+#extrafont::loadfonts(device="pdf")
+#extrafont::loadfonts(device="postscript")
+#loadfonts(device = "win")
+#font_import(paths = NULL, recursive = TRUE, prompt = TRUE,pattern=NULL)
+library(tidyverse)
+library(hrbrthemes)
+library(viridis)
+```
+
+```{r extradataset, echo=TRUE}
+# create a dataset
+data <- data.frame(
+  name=c( rep("A",500), rep("B",500), rep("B",500), rep("C",20), rep('D', 100)  ),
+  value=c( rnorm(500, 10, 5), rnorm(500, 13, 1), rnorm(500, 18, 1), rnorm(20, 25, 4), rnorm(100, 12, 1) )
+)
+```
+
+Boxplot amb ggplot
+
+```{r boxplotggplot, echo=TRUE}
+# Boxplot basic
+data %>%
+  ggplot( aes(x=name, y=value, fill=name)) +
+    geom_boxplot() +
+    scale_fill_viridis(discrete = TRUE, alpha=0.6, option="A") +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("Basic boxplot") +
+    xlab("")
+```
+
+Boxplot amb ggplot i dades
+
+```{r boxplotggplotjitter, echo=TRUE}
+# Plot
+data %>%
+  ggplot( aes(x=name, y=value, fill=name)) +
+    geom_boxplot() +
+    scale_fill_viridis(discrete = TRUE, alpha=0.6) +
+    geom_jitter(color="black", size=0.4, alpha=0.9) +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("A boxplot with jitter") +
+    xlab("")
+```
+
+Violin plot
+
+```{r violinplotggplot, echo=TRUE}
+# Violin basic
+data %>%
+  ggplot( aes(x=name, y=value, fill=name)) +
+    geom_violin() +
+    scale_fill_viridis(discrete = TRUE, alpha=0.6, option="A") +
+    theme_ipsum() +
+    theme(
+      legend.position="none",
+      plot.title = element_text(size=11)
+    ) +
+    ggtitle("Violin chart") +
+    xlab("")
+```
+
+Exercici: fer els plots amb altra variable
